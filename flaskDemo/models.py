@@ -69,7 +69,7 @@ class Works_On(db.Model):
     __table__ = db.Model.metadata.tables['works_on']
 """
 class User1(db.Model):
-    __table__ = db.Model.metadata.tables['user1']
+    __table__ = db.Model.metadata.tables['User1']
     @property
     def is_active(self):
         return True
@@ -84,15 +84,15 @@ class User1(db.Model):
         return str(self.User_Id)
 
 class Item(db.Model):
-    __table__ = db.Model.metadata.tables['item']
+    __table__ = db.Model.metadata.tables['Item']
 
 class Reservation(db.Model):
-    __table__ = db.Model.metadata.tables['reservation']
+    __table__ = db.Model.metadata.tables['Reservation']
     
 class User1_type(db.Model):
-    __table__ = db.Model.metadata.tables['user1_type']
+    __table__ = db.Model.metadata.tables['User1_type']
 
 class Publisher(db.Model):
-    __table__ = db.Model.metadata.tables['publisher']
+    __table__ = db.Model.metadata.tables['Publisher']
 
   
