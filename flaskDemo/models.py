@@ -3,7 +3,7 @@ from flaskDemo import db, login_manager
 from flask_login import UserMixin
 from functools import partial
 from sqlalchemy import orm
-
+from flask_table import Table, Col #Imported for search results table -Ted
 db.Model.metadata.reflect(db.engine)
 
 @login_manager.user_loader
@@ -34,8 +34,21 @@ class Post(db.Model):
 
      def __repr__(self):
          return f"Post('{self.title}', '{self.date_posted}')"
+     
+        
 
-
+#Search results table code  -Ted
+class Results(Table):
+    Title = Col('Title')
+    Item_Id = Col('Item ID')
+    Author_Id = Col('Author ID')
+    Publisher_Id = Col('Publisher ID')
+    Language_Id = Col('Language ID')
+    Rack_Id = Col('Rack ID')
+    Keyword = Col('Keyword')
+    Item_type_id = Col('Item Type', show=False)
+ #End of Search results table code   -Ted
+    
 
 
 
@@ -85,6 +98,12 @@ class User1(db.Model):
 
 class Item(db.Model):
     __table__ = db.Model.metadata.tables['Item']
+
+class Author(db.Model):
+    __table__ = db.Model.metadata.tables['Author']
+    
+class Language(db.Model):
+    __table__ = db.Model.metadata.tables['Language']
 
 class Reservation(db.Model):
     __table__ = db.Model.metadata.tables['Reservation']

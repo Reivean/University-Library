@@ -3,14 +3,81 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskDemo import app, db, bcrypt
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm
 # from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, Assignform
-from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher
+from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher, Author, Language, Post, Results
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 
+#Below 2 imports are for creating db_session, which is used for access to the whole database -Ted
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+engine = create_engine('mysql://Ted:1111@127.0.0.1:8889/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind = engine))
+
+
 
 @app.route("/")
+
+
+
+
+#This is the search part in construction -Ted
+@app.route("/search", methods=['GET','POST'])
+@login_required
+def search():
+    search = ItemSearchForm(request.form)
+    if request.method == 'POST':
+        return search_results(search)
+    return render_template('search.html', form=search)
+
+@app.route("/results")
+@login_required
+def search_results(search):
+    results = []
+    search_string = search.data['search']
+    
+    if search_string:
+        if search.data['select'] == 'Author':
+            qry = db_session.query(Item, Author).filter(
+                    Author.Author_Id==Item.Author_Id).filter(
+                            Author.LastName.contains(search_string))
+            results = [item[0] for item in qry.all()]
+        elif search.data['select'] == 'Title':
+            qry = db_session.query(Item).filter(
+                    Item.Title.contains(search_string))
+            results = qry.all()
+        elif search.data['select'] == 'Publisher':
+            qry = db_session.query(Item, Publisher).filter(
+                    Publisher.Publisher_Id==Item.Publisher_Id).filter(
+                            Publisher.Name.contains(search_string))
+            results = [item[0] for item in qry.all()]
+        elif search.data['select'] == 'Keyword':
+            qry = db_session.query(Item).filter(
+                    Item.Keyword.contains(search_string))
+            results = qry.all()
+        else:
+            qry = db_session.quary(Item)
+            results = qry.all()
+    else:
+        qry = db_session.quary(Item)
+        results = qry.all()
+    
+    if not results:
+        flash('No results found!')
+        return redirect(url_for('search'))
+    else:
+        table = Results(results)
+        table.border = True
+        return render_template('results.html', table=table)
+#End of the search part -Ted
+        
+    
+    
+    
 @app.route("/home")
 def home():
     # results2 = Faculty.query.join(Qualified,Faculty.facultyID == Qualified.facultyID) \

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, DateField, SelectField, HiddenField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, DateField, SelectField, HiddenField, Form
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError,Regexp
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flaskDemo import db
@@ -221,5 +221,13 @@ class Reserveform(reservevalidate):
      #   essn = Works_On.query.filter_by(essn=essn.data,pno=pno.data).first()
       #  if essn:
        #     raise ValidationError('That employee is already assigned to the Project. Please choose a different one.')
-
-
+       
+#Search form code -Ted
+class ItemSearchForm(Form):
+    choices = [("Title", "Title"),
+               ("Author", "Author"),
+               ("Publisher", "Publisher"),
+               ("Keyword", "Keyword")]
+    select = SelectField("Search for Item:", choices=choices)
+    search = StringField("")
+#End of search form code -Ted
