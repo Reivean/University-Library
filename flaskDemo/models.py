@@ -37,17 +37,18 @@ class Post(db.Model):
      
         
 
-#Search results table code  -Ted
-class Results(Table):
-    Title = Col('Title')
-    Item_Id = Col('Item ID')
-    Author_Id = Col('Author ID')
-    Publisher_Id = Col('Publisher ID')
-    Language_Id = Col('Language ID')
-    Rack_Id = Col('Rack ID')
-    Keyword = Col('Keyword')
-    Item_type_id = Col('Item Type', show=False)
- #End of Search results table code   -Ted
+##Search results table code  -Ted
+#class Results(Table):
+#    Title = Col('Title')
+#    Item_Id = Col('Item ID')
+#    Author_Id = Col('Author ID')
+#    Author.LastName = Col('Author Last Name')
+#    Publisher_Id = Col('Publisher ID') 
+#    Language_Id = Col('Language ID')
+#    Rack_Id = Col('Rack ID')
+#    Keyword = Col('Keyword')
+#    Item_type_id = Col('Item Type', show=False)
+# #End of Search results table code   -Ted
     
 
 
@@ -95,6 +96,8 @@ class User1(db.Model):
     def get_id(self):
         print(self,flush=True)
         return str(self.User_Id)
+    def get_utype(self):
+        return int(self.User1_type_id);
 
 class Item(db.Model):
     __table__ = db.Model.metadata.tables['Item']
@@ -114,4 +117,16 @@ class User1_type(db.Model):
 class Publisher(db.Model):
     __table__ = db.Model.metadata.tables['Publisher']
 
-  
+
+#Search results table code  -Ted
+class Results(Table):
+    Title = Col('Title')
+    Item_Id = Col('Item ID')
+    Author_Id = Col('Author ID')
+#    Author.LastName = Col('Author Last Name')
+    Publisher_Id = Col('Publisher ID') 
+    Language_Id = Col('Language ID')
+    Rack_Id = Col('Rack ID')
+    Keyword = Col('Keyword')
+    Item_type_id = Col('Item Type', show=False)
+ #End of Search results table code   -Ted

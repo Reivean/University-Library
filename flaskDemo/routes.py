@@ -6,8 +6,10 @@ from flaskDemo import app, db, bcrypt
 from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm
 # from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, Assignform
 from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher, Author, Language, Post, Results
-from flask_login import login_user, current_user, logout_user, login_required
+from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from datetime import datetime
+
+from functools import wraps
 
 #Below 2 imports are for creating db_session, which is used for access to the whole database -Ted
 from sqlalchemy import create_engine
@@ -18,16 +20,30 @@ db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind = engine))
 
+#This part is a redefiner for the login_reqired decorater, to make it simple just testing with 3-library_stuff for accessing reservation  -Ted
+login_manager = LoginManager()
+
+def login_required(role='ANY'):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            
+            if not current_user.is_authenticated:
+                return app.login_manager.unauthorized()
+            if ((current_user.User1_type_id != role) and (role != 'ANY')):
+                return app.login_manager.unauthorized()
+            return fn(*args, **kwargs)
+        return decorated_view
+    return wrapper
+#End of new stuff -Ted
+
 
 
 @app.route("/")
 
-
-
-
 #This is the search part in construction -Ted
 @app.route("/search", methods=['GET','POST'])
-@login_required
+@login_required(role = 'ANY')
 def search():
     search = ItemSearchForm(request.form)
     if request.method == 'POST':
@@ -35,18 +51,28 @@ def search():
     return render_template('search.html', form=search)
 
 @app.route("/results")
-@login_required
+@login_required(role = 'ANY')
 def search_results(search):
     results = []
     search_string = search.data['search']
     
     if search_string:
         if search.data['select'] == 'Author':
+#            qry = Item.query.join(Author, Item.Author_Id == Author.Author_Id) \
+#                  .add_columns(Item.Title, Item.Item_Id, Author.LastName) \
+#                  .join(Publisher, Item.Publisher_Id == Publisher.Publisher_Id) \
+#                  .add_columns(Publisher.Name) \
+#                  .filter(Author.LastName.contains(search_string))
             qry = db_session.query(Item, Author).filter(
                     Author.Author_Id==Item.Author_Id).filter(
                             Author.LastName.contains(search_string))
             results = [item[0] for item in qry.all()]
         elif search.data['select'] == 'Title':
+#            qry = Item.query.join(Author,Item.Author_Id == Author.Author_Id) \
+#                  .add_columns(Item.Title,Item.Item_Id,Author.LastName) \
+#                  .join(Publisher, Item.Publisher_Id == Publisher.Publisher_Id) \
+#                  .add_columns(Publisher.Name) \
+#                  .filter(Item.Title.contains(search_string))
             qry = db_session.query(Item).filter(
                     Item.Title.contains(search_string))
             results = qry.all()
@@ -168,7 +194,7 @@ def save_picture(form_picture):
 
 
 @app.route("/account", methods=['GET', 'POST'])
-@login_required
+@login_required(role = 'ANY')
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
@@ -189,7 +215,7 @@ def account():
 
 
 @app.route("/dept/new", methods=['GET', 'POST'])
-@login_required
+@login_required(role = 'ANY')
 def new_dept():
     form = DeptForm()
     if form.validate_on_submit():
@@ -210,7 +236,7 @@ def new_dept():
 
 
 @app.route("/dept/<dnumber>/update", methods=['GET', 'POST'])
-@login_required
+@login_required(role = 'ANY')
 def update_dept(dnumber):
     dept = Department.query.get_or_404(dnumber)
     currentDept = dept.dname
@@ -237,7 +263,7 @@ def update_dept(dnumber):
 
 
 @app.route("/dept/<dnumber>/delete", methods=['POST'])
-@login_required
+@login_required(role = 'ANY')
 def delete_dept(dnumber):
     dept = Department.query.get_or_404(dnumber)
     db.session.delete(dept)
@@ -248,13 +274,13 @@ def delete_dept(dnumber):
 
 
 @app.route("/publish/<Publisher_Id>/<Name>")
-@login_required
+@login_required(role = 'ANY')
 def publish(Publisher_Id,Name):
     publish = Publisher.query.get_or_404([Publisher_Id,Name])
     return render_template('publish.html', title=publish.Address, publish=publish,now=datetime.utcnow())
 
 @app.route("/reserve", methods=['GET', 'POST'])
-@login_required
+@login_required(role = 3)
 def reserve():
     form = Reserveform()
     if form.validate_on_submit():
@@ -267,14 +293,14 @@ def reserve():
 
 
 @app.route("/reserve/<Reservation_Id>")
-@login_required
+@login_required(role = '3')
 def details_reserve(Reservation_Id):
     reserve = Reservation.query.get_or_404([Reservation_Id])
     return render_template('reserve.html', title=str(reserve.Reservation_Id), reserve=reserve, now=datetime.utcnow())
 
 
 @app.route("/reserve/<Reservation_Id>/delete", methods=['POST'])
-@login_required
+@login_required(role = 3)
 def delete_reserve(Reservation_Id):
     reserve = Reservation.query.get_or_404([Reservation_Id])
     db.session.delete(reserve)
@@ -306,7 +332,7 @@ def delete_reserve(Reservation_Id):
 
 
 @app.route("/assign/new", methods=['GET', 'POST'])
-@login_required
+@login_required(role = 'ANY')
 def new_assign():
     form = Assignform()
     if form.validate_on_submit():
