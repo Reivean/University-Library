@@ -5,7 +5,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextA
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError,Regexp
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flaskDemo import db
-from flaskDemo.models import Reservation, User1, Item, User1_type
+from flaskDemo.models import Reservation, User1, Item, User1_type, Item_type, Publisher, Location, Language, Author
 #from flaskDemo.models import User, Department, getDepartment, getDepartmentFactory, Employee, Project, Works_On, Reservation, User, Item
 from wtforms.fields.html5 import DateField
 
@@ -15,6 +15,11 @@ from wtforms.fields.html5 import DateField
 user1typeid = User1_type.query.with_entities(User1_type.User1_type_id, User1_type.Name)
 userid = User1.query.with_entities(User1.User_Id, User1.Name)
 itemid = Item.query.with_entities(Item.Item_Id, Item.Title)
+publisherid = Publisher.query.with_entities(Publisher.Publisher_Id, Publisher.Name)
+locationid = Location.query.with_entities(Location.Rack_Id)
+languageid = Language.query.with_entities(Language.Language_Id, Language.Language_Name)
+itemtypeid = Item_type.query.with_entities(Item_type.Item_type_id, Item_type.Type_name)
+authorid = Author.query.with_entities(Author.Author_Id, Author.FirstName, Author.LastName)
 
 #### query to get usertype id and name from table
 
@@ -58,12 +63,43 @@ for row in user1typeid:
     results.append(rowDict)
 mychoices5 = [(row['User1_type_id'], row['Name']) for row in results]
 
+#Emmanuel For Add Form below
+results=list()
+for row in publisherid:
+     rowDict=row._asdict()
+     results.append(rowDict)
+myChoices9 = [(row['Publisher_Id'], row['Name']) for row in results]
+
+results=list()
+for row in languageid:
+     rowDict=row._asdict()
+     results.append(rowDict)
+myChoices10 = [(row['Language_Id'], row['Language_Name']) for row in results]
+
+results=list()
+for row in locationid:
+     rowDict=row._asdict()
+     results.append(rowDict)
+myChoices11 = [(row['Rack_Id'], row['Rack_Id']) for row in results]
+
+results=list()
+for row in itemtypeid:
+     rowDict=row._asdict()
+     results.append(rowDict)
+myChoices12 = [(row['Item_type_id'], row['Type_name']) for row in results]
+
+results=list()
+for row in authorid:
+     rowDict=row._asdict()
+     results.append(rowDict)
+myChoices13 = [(row['Author_Id'], row['FirstName']) for row in results]
+
+#Emmanuel For Add Form Above
+
 
 regex1='^((((19|20)(([02468][048])|([13579][26]))-02-29))|((20[0-9][0-9])|(19[0-9][0-9]))-((((0[1-9])'
 regex2='|(1[0-2]))-((0[1-9])|(1\d)|(2[0-8])))|((((0[13578])|(1[02]))-31)|(((0[1,3-9])|(1[0-2]))-(29|30)))))$'
 regex=regex1 + regex2
-
-
 
 
 class RegistrationForm(FlaskForm):
@@ -205,7 +241,7 @@ class Reserveform(reservevalidate):
 
     # User_ID=SelectField('User1', validators=[DataRequired()])
     # Item_Id=SelectField('Item', validators=[DataRequired()])
-    Due_Date =  DateField("Due Date")
+    Due_Date = DateField("Due Date")
     submit = SubmitField('Add this relationship')
 
     def validate_User_ID_Item_Id(self, User_ID, Item_Id):
@@ -231,3 +267,20 @@ class ItemSearchForm(Form):
     select = SelectField("Search for Item:", choices=choices)
     search = StringField("")
 #End of search form code -Ted
+
+#Emmanuel's code for Add form below
+
+class Addform(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    publisher = SelectField("Publisher:", choices=myChoices9)
+    language = SelectField("Language:", choices=myChoices10)
+    location = SelectField("Location:", choices=myChoices11)
+    keyword = StringField('Keyword', validators=[DataRequired()])
+    type = SelectField("Search Types:", choices=myChoices12)
+    item = StringField("Item ID:", validators=[DataRequired()])
+    author = SelectField('Author', choices=myChoices13)
+
+    submit = SubmitField('Add this Item')
+
+
+#Emmanuel's code for Add form above

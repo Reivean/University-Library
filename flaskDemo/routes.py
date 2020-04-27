@@ -1,11 +1,11 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request, abort
+from flask import render_template, url_for, flash, redirect, request, request, abort
 from flaskDemo import app, db, bcrypt
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm
-# from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, Assignform
-from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher, Author, Language, Post, Results
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm, Addform
+# from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, Assignform,
+from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher, Author, Language, Post, Results, Location, Item_type
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from datetime import datetime
 
@@ -15,7 +15,7 @@ from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-engine = create_engine('mysql://Ted:1111@127.0.0.1:8889/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
+engine = create_engine('mysql://root:NummerEins#1@localhost/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind = engine))
@@ -86,10 +86,10 @@ def search_results(search):
                     Item.Keyword.contains(search_string))
             results = qry.all()
         else:
-            qry = db_session.quary(Item)
+            qry = db_session.query(Item)
             results = qry.all()
     else:
-        qry = db_session.quary(Item)
+        qry = db_session.query(Item)
         results = qry.all()
     
     if not results:
@@ -231,8 +231,8 @@ def new_dept():
 #@app.route("/dept/<dnumber>")
 #@login_required
 #def dept(dnumber):
- #   dept = Department.query.get_or_404(dnumber)
-  #  return render_template('dept.html', title=dept.dname, dept=dept, now=datetime.utcnow())
+#   dept = Department.query.get_or_404(dnumber)
+#  return render_template('dept.html', title=dept.dname, dept=dept, now=datetime.utcnow())
 
 
 @app.route("/dept/<dnumber>/update", methods=['GET', 'POST'])
@@ -329,7 +329,46 @@ def delete_reserve(Reservation_Id):
 #    flash('The relation has been deleted!', 'success')
 #    return redirect(url_for('home'))
 
+#Emmanuels Add Item begins
+@app.route("/add", methods=['GET', 'POST'])
+@login_required(role = 3)
+def add():
+    form = Addform()
+    #
+    if request.method == 'POST':
 
+        addItem = Item(Keyword=form.keyword.data, \
+                       Rack_Id=form.location.data, \
+                       Item_type_id=form.type.data, \
+                       Publisher_Id=form.publisher.data,\
+                       Author_Id=form.author.data,\
+                       Language_Id=form.language.data,\
+                       Item_Id=form.item.data,\
+                       Title=form.title.data)
+
+        db.session.add(addItem)
+        db.session.commit()
+        flash('The Item has been added', 'success')
+        return render_template('add_item.html', title='New Item', form=form, legend='New Item')
+    return render_template('add_item.html', title='New Item', form=form, legend='New Item')
+
+
+@app.route("/add/<Item_Id>")
+@login_required(role = 3)
+def details_add(Item_Id):
+    add = Item.query.get_or_404([Item_Id])
+    return render_template('add_item.html', title=str(add.Item_Id), add=add, now=datetime.utcnow())
+
+@app.route("/add/<Item_Id>/delete", methods=['POST'])
+@login_required(role = 3)
+def delete_add(Item_Id):
+    add = Item.query.get_or_404([Item_Id])
+    db.session.delete(add)
+    db.session.commit()
+    flash('The Item has been deleted!', 'success')
+    return redirect(url_for('home'))
+
+#Emmanuel's Add Item Ends
 
 @app.route("/assign/new", methods=['GET', 'POST'])
 @login_required(role = 'ANY')
