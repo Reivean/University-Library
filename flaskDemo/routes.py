@@ -343,7 +343,7 @@ def add():
                        Publisher_Id=form.publisher.data,\
                        Author_Id=form.author.data,\
                        Language_Id=form.language.data,\
-                       Item_Id=form.item.data,\
+                       Item_Id=0,\
                        Title=form.title.data)
 
         db.session.add(addItem)

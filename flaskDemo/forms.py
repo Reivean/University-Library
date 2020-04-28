@@ -15,7 +15,7 @@ from wtforms.fields.html5 import DateField
 user1typeid = User1_type.query.with_entities(User1_type.User1_type_id, User1_type.Name)
 userid = User1.query.with_entities(User1.User_Id, User1.Name)
 itemid = Item.query.with_entities(Item.Item_Id, Item.Title)
-publisherid = Publisher.query.with_entities(Publisher.Publisher_Id, Publisher.Name)
+publisherid = Publisher.query.with_entities(Publisher.Publisher_Id)
 locationid = Location.query.with_entities(Location.Rack_Id)
 languageid = Language.query.with_entities(Language.Language_Id, Language.Language_Name)
 itemtypeid = Item_type.query.with_entities(Item_type.Item_type_id, Item_type.Type_name)
@@ -68,7 +68,7 @@ results=list()
 for row in publisherid:
      rowDict=row._asdict()
      results.append(rowDict)
-myChoices9 = [(row['Publisher_Id'], row['Name']) for row in results]
+myChoices9 = [(row['Publisher_Id'], row['Publisher_Id']) for row in results]
 
 results=list()
 for row in languageid:
