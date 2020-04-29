@@ -1,6 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="content-section">
+    <form method="POST" action="/item/delete">
+        <select name="itemId">
+            {% for item in items %}
+                <option value="{{item.Item_Id}}">{{ item.Title }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Delete Item</button>
+    </form>
+
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
@@ -111,10 +121,15 @@
                     {{ form.type(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
+              <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
         </div>
     </form>
+
+
 </div>
+
 {% endblock content %}

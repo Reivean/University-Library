@@ -8,6 +8,7 @@ from flaskDemo import db
 from flaskDemo.models import Reservation, User1, Item, User1_type, Item_type, Publisher, Location, Language, Author
 #from flaskDemo.models import User, Department, getDepartment, getDepartmentFactory, Employee, Project, Works_On, Reservation, User, Item
 from wtforms.fields.html5 import DateField
+from flask_table import Table, Col, LinkCol
 
 # ssns = Department.query.with_entities(Department.mgr_ssn).distinct()
 # emp = Employee.query.with_entities(Employee.ssn, Employee.fname,Employee.lname)
@@ -20,6 +21,7 @@ locationid = Location.query.with_entities(Location.Rack_Id)
 languageid = Language.query.with_entities(Language.Language_Id, Language.Language_Name)
 itemtypeid = Item_type.query.with_entities(Item_type.Item_type_id, Item_type.Type_name)
 authorid = Author.query.with_entities(Author.Author_Id, Author.FirstName, Author.LastName)
+
 
 #### query to get usertype id and name from table
 
@@ -284,7 +286,7 @@ class ItemSearchForm(Form):
 
 #Emmanuel's code for Add form below
 
-class Addform(FlaskForm):
+class AddItemform(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     publisher = SelectField("Publisher:", choices=myChoices9)
     language = SelectField("Language:", choices=myChoices10)
@@ -294,8 +296,12 @@ class Addform(FlaskForm):
     item = StringField("Item ID:", validators=[DataRequired()])
     author = SelectField('Author', choices=myChoices13)
     publication_date = DateField('Publication Date')
+    delete = LinkCol('Delete', 'delete', url_kwargs=dict(id='id'))
 
     submit = SubmitField('Add this Item')
 
 
 #Emmanuel's code for Add form above
+
+
+

@@ -3,7 +3,7 @@ from flaskDemo import db, login_manager
 from flask_login import UserMixin
 from functools import partial
 from sqlalchemy import orm
-from flask_table import Table, Col #Imported for search results table -Ted
+from flask_table import Table, Col, LinkCol  # Imported for search results table -Ted
 db.Model.metadata.reflect(db.engine)
 
 @login_manager.user_loader
@@ -49,10 +49,6 @@ class Post(db.Model):
 #    Keyword = Col('Keyword')
 #    Item_type_id = Col('Item Type', show=False)
 # #End of Search results table code   -Ted
-    
-
-
-
 
 # class Dependent(db.Model):
  #   __table__ = db.Model.metadata.tables['dependent']
@@ -139,3 +135,4 @@ class Results(Table):
     Keyword = Col('Keyword')
     Item_type_id = Col('Item Type', show=False)
  #End of Search results table code   -Ted
+

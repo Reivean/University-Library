@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, request, abort
 from flaskDemo import app, db, bcrypt
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm, Addform,ReserveUpdateForm
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm, AddItemform, ReserveUpdateForm
 # from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, Assignform,
 from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher, Author, Language, Post, Results, Location, Item_type
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
@@ -38,7 +38,6 @@ def login_required(role='ANY'):
 #End of new stuff -Ted
 
 
-
 @app.route("/")
 
 #This is the search part in construction -Ted
@@ -53,9 +52,8 @@ def search():
 @app.route("/results")
 @login_required(role = 'ANY')
 def search_results(search):
-    results = []
     search_string = search.data['search']
-    
+
     if search_string:
         if search.data['select'] == 'Author':
 #            qry = Item.query.join(Author, Item.Author_Id == Author.Author_Id) \
@@ -79,7 +77,7 @@ def search_results(search):
         elif search.data['select'] == 'Publisher':
             qry = db_session.query(Item, Publisher).filter(
                     Publisher.Publisher_Id==Item.Publisher_Id).filter(
-                            Publisher.Name.contains(search_string))
+                            Publisher.Publisher_Id.contains(search_string))
             results = [item[0] for item in qry.all()]
         elif search.data['select'] == 'Keyword':
             qry = db_session.query(Item).filter(
@@ -308,7 +306,6 @@ def delete_reserve(Reservation_Id):
     flash('The relation has been deleted!', 'success')
     return redirect(url_for('home'))
 
-
 #Structure is written by Yanji, modified by Ted. Also several html files modified by Yanji, include a new "update_reserve.html" file
 @app.route("/reserve/<Reservation_Id>/update", methods=['GET', 'POST'])
 @login_required(role = 'ANY')
@@ -331,11 +328,12 @@ def update_reserve(Reservation_Id):
 
 
 
-#Emmanuels Add Item begins
+#Emmanuels Add and Delete Item begins
 @app.route("/add", methods=['GET', 'POST'])
 @login_required(role = 3)
 def add():
-    form = Addform()
+    form = AddItemform()
+    items = Item.query.all()
     #
     if request.method == 'POST':
 
@@ -351,27 +349,24 @@ def add():
 
         db.session.add(addItem)
         db.session.commit()
+        items = Item.query.all()
         flash('The Item has been added', 'success')
-        return render_template('add_item.html', title='New Item', form=form, legend='New Item')
-    return render_template('add_item.html', title='New Item', form=form, legend='New Item')
+        return render_template('add_item.html', title='New Item', form=form, legend='New Item', items=items)
+    return render_template('add_item.html', title='New Item', form=form, legend='New Item', items=items)
 
 
-@app.route("/add/<Item_Id>")
-@login_required(role = 3)
-def details_add(Item_Id):
-    add = Item.query.get_or_404([Item_Id])
-    return render_template('add_item.html', title=str(add.Item_Id), add=add, now=datetime.utcnow())
-
-@app.route("/add/<Item_Id>/delete", methods=['POST'])
-@login_required(role = 3)
-def delete_add(Item_Id):
-    add = Item.query.get_or_404([Item_Id])
-    db.session.delete(add)
+@app.route("/item/delete", methods=['POST'])
+@login_required(role=3)
+def delete_item():
+    item_id = int(request.form.get('itemId'));
+    item = Item.query.get_or_404(item_id)
+    db.session.delete(item)
     db.session.commit()
     flash('The Item has been deleted!', 'success')
-    return redirect(url_for('home'))
+    return redirect(url_for('add'))
 
-#Emmanuel's Add Item Ends
+#Emmanuel's Add and Delete Item Ends
+
 
 @app.route("/assign/new", methods=['GET', 'POST'])
 @login_required(role = 'ANY')
