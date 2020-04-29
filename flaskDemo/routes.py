@@ -15,7 +15,7 @@ from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-engine = create_engine('mysql://Ted:1111@127.0.0.1:8889/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
+engine = create_engine('mysql://root:NummerEins#1@localhost/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind = engine))
@@ -118,7 +118,7 @@ def home():
     # print("Hello world....shivang here....", flush=True)
 
     results4 = Reservation.query.join(User1,Reservation.User_ID == User1.User_Id)\
-               .add_columns(Reservation.Reservation_Id,User1.User_Id, Item.Item_Id, User1.Name, Item.Keyword)\
+               .add_columns(Reservation.Reservation_Id,User1.User_Id, Item.Item_Id, User1.UName, Item.Keyword)\
                .join(Item, Item.Item_Id == Reservation.Item_Id)       
 
                ##### get data by user1.user_id == current user of logged in user   where condition
@@ -127,7 +127,7 @@ def home():
     posts = Post.query.all()
     return render_template('home.html', posts=posts)
     results4 = Reservation.query.join(User1,Reservation.User_ID == User1.User_Id)\
-               .add_columns(Reservation.Reservation_Id,User1.User_Id, Item.Item_Id, User1.Name, Item.Keyword)\
+               .add_columns(Reservation.Reservation_Id,User1.User_Id, Item.Item_Id, User1.UName, Item.Keyword)\
                .join(Item, Item.Item_Id == Reservation.Item_Id)
     return render_template('join.html', title='Join',joined_m_n = results4)
 
@@ -145,7 +145,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User1(Name=form.name.data,DOB=form.dateofbirth.data,Email=form.email.data, Password=hashed_password, User1_type_id=form.user1typeid.data, Address=form.address.data)
+        user = User1(UName=form.uname.data,FName=form.firstname.data,LName=form.lastname.data, DOB=form.dateofbirth.data,Email=form.email.data, Password=hashed_password, User1_type_id=form.user1typeid.data, Address=form.address.data)
         # user = User1(username=form.username.data, Email=form.email.data, Password=hashed_password)
         db.session.add(user)
         db.session.commit()
@@ -163,7 +163,7 @@ def login():
     if form.validate_on_submit():
         user = User1.query.filter_by(Email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.Password, form.password.data):
-            print(user.Name, flush=True)
+            print(user.UName, flush=True)
             user.authenticated = True
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -207,9 +207,9 @@ def account():
         flash('Your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
-        form.username.data = current_user.Name
+        form.username.data = current_user.UName
         form.email.data = current_user.Email
-    image_file = url_for('static', filename='profile_pics/' + current_user.Name)
+    image_file = url_for('static', filename='profile_pics/' + current_user.UName)
     return render_template('account.html', title='Account',
                            image_file=image_file, form=form)
 
@@ -345,6 +345,7 @@ def add():
                        Publisher_Id=form.publisher.data,\
                        Author_Id=form.author.data,\
                        Language_Id=form.language.data,\
+                       Publication_Date=form.publication_date.data,\
                        Item_Id=0,\
                        Title=form.title.data)
 

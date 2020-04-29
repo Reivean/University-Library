@@ -13,7 +13,7 @@ from wtforms.fields.html5 import DateField
 # emp = Employee.query.with_entities(Employee.ssn, Employee.fname,Employee.lname)
 # proj = Project.query.with_entities(Project.pnumber, Project.pname)
 user1typeid = User1_type.query.with_entities(User1_type.User1_type_id, User1_type.Name)
-userid = User1.query.with_entities(User1.User_Id, User1.Name)
+userid = User1.query.with_entities(User1.User_Id, User1.UName)
 itemid = Item.query.with_entities(Item.Item_Id, Item.Title)
 publisherid = Publisher.query.with_entities(Publisher.Publisher_Id)
 locationid = Location.query.with_entities(Location.Rack_Id)
@@ -46,7 +46,7 @@ results=list()
 for row in userid:
      rowDict=row._asdict()
      results.append(rowDict)
-myChoices6 = [(row['User_Id'], row['Name']) for row in results]
+myChoices6 = [(row['User_Id'], row['UName']) for row in results]
 
 
 # results=list()
@@ -92,7 +92,7 @@ results=list()
 for row in authorid:
      rowDict=row._asdict()
      results.append(rowDict)
-myChoices13 = [(row['Author_Id'], row['FirstName']) for row in results]
+myChoices13 = [(row['Author_Id'], row['FirstName'] + " " + row['LastName']) for row in results]
 
 #Emmanuel For Add Form Above
 
@@ -105,7 +105,12 @@ regex=regex1 + regex2
 class RegistrationForm(FlaskForm):
     # username = StringField('Username',
     #                        validators=[DataRequired(), Length(min=2, max=20)])
-    name = StringField('Name',
+    firstname = StringField('First Name',
+                        validators=[DataRequired()])
+    lastname = StringField('Last Name',
+                            validators=[DataRequired()])
+
+    uname = StringField('Username',
                         validators=[DataRequired()])
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
@@ -225,7 +230,7 @@ class PostForm(FlaskForm):
 
 class reservevalidate(FlaskForm):
 
-    User_ID = SelectField("User's Name", choices=myChoices6 , coerce=int)
+    User_ID = SelectField("Username", choices=myChoices6 , coerce=int)
     Item_Id = SelectField("Item's Title", choices=myChoices7 , coerce=int)
     
 
@@ -288,6 +293,7 @@ class Addform(FlaskForm):
     type = SelectField("Search Types:", choices=myChoices12)
     item = StringField("Item ID:", validators=[DataRequired()])
     author = SelectField('Author', choices=myChoices13)
+    publication_date = DateField('Publication Date')
 
     submit = SubmitField('Add this Item')
 
