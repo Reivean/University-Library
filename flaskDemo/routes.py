@@ -322,7 +322,7 @@ def update_reserve(Reservation_Id):
         reserve.Reservation_Date = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
         db.session.commit()
         flash('The relation has been updated!', 'success')
-        return redirect(url_for('reserve', Reservation_Id=Reservation_Id))
+        return redirect(url_for('home'))
     elif request.method == 'GET':
         form.Item_Id.data = reserve.Item_Id
         form.User_ID.data = reserve.User_ID
