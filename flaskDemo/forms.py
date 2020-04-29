@@ -268,7 +268,7 @@ class Reserveform(reservevalidate):
 #Reservation update Form - Made by Yanji
 class ReserveUpdateForm(FlaskForm):
     Reservation_Id = HiddenField("")
-    User_ID = SelectField("Update User's Name", choices=myChoices6, coerce=int)
+    User_ID = SelectField("Update User's ID", choices=myChoices6, coerce=int)
     Item_Id = SelectField("Update Item's Title", choices=myChoices7, coerce=int)
     Due_Date = DateField("Update Due Date")
     submit = SubmitField('Update your reservation')

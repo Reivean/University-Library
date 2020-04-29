@@ -79,7 +79,7 @@ class Works_On(db.Model):
     __table__ = db.Model.metadata.tables['works_on']
 """
 class User1(db.Model):
-    __table__ = db.Model.metadata.tables['user1']
+    __table__ = db.Model.metadata.tables['User1']
     @property
     def is_active(self):
         return True
@@ -96,31 +96,29 @@ class User1(db.Model):
         return int(self.User1_type_id);
 
 class Item(db.Model):
-    __table__ = db.Model.metadata.tables['item']
+    __table__ = db.Model.metadata.tables['Item']
 
 class Author(db.Model):
-    __table__ = db.Model.metadata.tables['author']
+    __table__ = db.Model.metadata.tables['Author']
     
 class Language(db.Model):
-    __table__ = db.Model.metadata.tables['language']
+    __table__ = db.Model.metadata.tables['Language']
 
 class Reservation(db.Model):
-    __table__ = db.Model.metadata.tables['reservation']
+    __table__ = db.Model.metadata.tables['Reservation']
     
 class User1_type(db.Model):
-    __table__ = db.Model.metadata.tables['user1_type']
+    __table__ = db.Model.metadata.tables['User1_type']
 
 class Publisher(db.Model):
-    __table__ = db.Model.metadata.tables['publisher']
+    __table__ = db.Model.metadata.tables['Publisher']
 
 class Location(db.Model):
-    __table__ = db.Model.metadata.tables['rack']
+    __table__ = db.Model.metadata.tables['Rack']
 
 class Item_type(db.Model):
-    __table__ = db.Model.metadata.tables['item_type']
+    __table__ = db.Model.metadata.tables['Item_type']
 
-class Author(db.Model):
-    __table__ = db.Model.metadata.tables['author']
 
 
 #Search results table code  -Ted

@@ -15,7 +15,7 @@ from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-engine = create_engine('mysql://root:NummerEins#1@localhost/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
+engine = create_engine('mysql://Ted:1111@127.0.0.1:8889/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind = engine))
@@ -116,17 +116,18 @@ def home():
     # print("Hello world....shivang here....", flush=True)
 
     results4 = Reservation.query.join(User1,Reservation.User_ID == User1.User_Id)\
-               .add_columns(Reservation.Reservation_Id,User1.User_Id, Item.Item_Id, User1.UName, Item.Keyword)\
-               .join(Item, Item.Item_Id == Reservation.Item_Id)       
+               .add_columns(Reservation.Reservation_Id,User1.FName, User1.LName)\
+               .join(Item, Item.Item_Id == Reservation.Item_Id) \
+               .add_columns(Item.Title)
 
                ##### get data by user1.user_id == current user of logged in user   where condition
                
     return render_template('assign_home.html', joined_m_n = results4)
     posts = Post.query.all()
-    return render_template('home.html', posts=posts)
-    results4 = Reservation.query.join(User1,Reservation.User_ID == User1.User_Id)\
-               .add_columns(Reservation.Reservation_Id,User1.User_Id, Item.Item_Id, User1.UName, Item.Keyword)\
-               .join(Item, Item.Item_Id == Reservation.Item_Id)
+    return render_template('search.html', posts=posts)
+#    results4 = Reservation.query.join(User1,Reservation.User_ID == User1.User_Id)\
+#               .add_columns(Reservation.Reservation_Id,User1.User_Id, Item.Item_Id, User1.UName, Item.Keyword)\
+#               .join(Item, Item.Item_Id == Reservation.Item_Id)
     return render_template('join.html', title='Join',joined_m_n = results4)
 
    
