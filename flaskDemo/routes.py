@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, request, abort
 from flaskDemo import app, db, bcrypt
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm, Addform
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm, Addform,ReserveUpdateForm
 # from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, Assignform,
 from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher, Author, Language, Post, Results, Location, Item_type
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
@@ -15,12 +15,12 @@ from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-engine = create_engine('mysql://root:NummerEins#1@localhost/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
+engine = create_engine('mysql://Ted:1111@127.0.0.1:8889/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind = engine))
 
-#This part is a redefiner for the login_reqired decorater, to make it simple just testing with 3-library_stuff for accessing reservation  -Ted
+#This part is a redefiner for the login_reqired decorater, to make it simple just testing with 3-library_stuff for accessing add and delete  -Ted
 login_manager = LoginManager()
 
 def login_required(role='ANY'):
@@ -214,18 +214,18 @@ def account():
                            image_file=image_file, form=form)
 
 
-@app.route("/dept/new", methods=['GET', 'POST'])
-@login_required(role = 'ANY')
-def new_dept():
-    form = DeptForm()
-    if form.validate_on_submit():
-        dept = Department(dname=form.dname.data, dnumber=form.dnumber.data,mgr_ssn=form.mgr_ssn.data,mgr_start=form.mgr_start.data)
-        db.session.add(dept)
-        db.session.commit()
-        flash('You have added a new department!', 'success')
-        return redirect(url_for('home'))
-    return render_template('create_dept.html', title='New Department',
-                           form=form, legend='New Department')
+#@app.route("/dept/new", methods=['GET', 'POST'])
+#@login_required(role = 'ANY')
+#def new_dept():
+#    form = DeptForm()
+#    if form.validate_on_submit():
+#        dept = Department(dname=form.dname.data, dnumber=form.dnumber.data,mgr_ssn=form.mgr_ssn.data,mgr_start=form.mgr_start.data)
+#        db.session.add(dept)
+#        db.session.commit()
+#        flash('You have added a new department!', 'success')
+#        return redirect(url_for('home'))
+#    return render_template('create_dept.html', title='New Department',
+#                           form=form, legend='New Department')
 
 
 #@app.route("/dept/<dnumber>")
@@ -235,41 +235,41 @@ def new_dept():
 #  return render_template('dept.html', title=dept.dname, dept=dept, now=datetime.utcnow())
 
 
-@app.route("/dept/<dnumber>/update", methods=['GET', 'POST'])
-@login_required(role = 'ANY')
-def update_dept(dnumber):
-    dept = Department.query.get_or_404(dnumber)
-    currentDept = dept.dname
-
-    form = DeptUpdateForm()
-    if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
-        if currentDept !=form.dname.data:
-            dept.dname=form.dname.data
-        dept.mgr_ssn=form.mgr_ssn.data
-        dept.mgr_start=form.mgr_start.data
-        db.session.commit()
-        flash('Your department has been updated!', 'success')
-        return redirect(url_for('dept', dnumber=dnumber))
-    elif request.method == 'GET':              # notice we are not passing the dnumber to the form
-
-        form.dnumber.data = dept.dnumber
-        form.dname.data = dept.dname
-        form.mgr_ssn.data = dept.mgr_ssn
-        form.mgr_start.data = dept.mgr_start
-    return render_template('create_dept.html', title='Update Department',
-                           form=form, legend='Update Department')
-
-
+#@app.route("/dept/<dnumber>/update", methods=['GET', 'POST'])
+#@login_required(role = 'ANY')
+#def update_dept(dnumber):
+#    dept = Department.query.get_or_404(dnumber)
+#    currentDept = dept.dname
+#
+#    form = DeptUpdateForm()
+#    if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
+#        if currentDept !=form.dname.data:
+#            dept.dname=form.dname.data
+#        dept.mgr_ssn=form.mgr_ssn.data
+#        dept.mgr_start=form.mgr_start.data
+#        db.session.commit()
+#        flash('Your department has been updated!', 'success')
+#        return redirect(url_for('dept', dnumber=dnumber))
+#    elif request.method == 'GET':              # notice we are not passing the dnumber to the form
+#
+#        form.dnumber.data = dept.dnumber
+#        form.dname.data = dept.dname
+#        form.mgr_ssn.data = dept.mgr_ssn
+#        form.mgr_start.data = dept.mgr_start
+#    return render_template('create_dept.html', title='Update Department',
+#                           form=form, legend='Update Department')
 
 
-@app.route("/dept/<dnumber>/delete", methods=['POST'])
-@login_required(role = 'ANY')
-def delete_dept(dnumber):
-    dept = Department.query.get_or_404(dnumber)
-    db.session.delete(dept)
-    db.session.commit()
-    flash('The department has been deleted!', 'success')
-    return redirect(url_for('home'))
+
+
+#@app.route("/dept/<dnumber>/delete", methods=['POST'])
+#@login_required(role = 'ANY')
+#def delete_dept(dnumber):
+#    dept = Department.query.get_or_404(dnumber)
+#    db.session.delete(dept)
+#    db.session.commit()
+#    flash('The department has been deleted!', 'success')
+#    return redirect(url_for('home'))
 
 
 
@@ -280,7 +280,7 @@ def publish(Publisher_Id,Name):
     return render_template('publish.html', title=publish.Address, publish=publish,now=datetime.utcnow())
 
 @app.route("/reserve", methods=['GET', 'POST'])
-@login_required(role = 3)
+@login_required(role = 'ANY')
 def reserve():
     form = Reserveform()
     if form.validate_on_submit():
@@ -293,14 +293,14 @@ def reserve():
 
 
 @app.route("/reserve/<Reservation_Id>")
-@login_required(role = '3')
+@login_required(role = 'ANY')
 def details_reserve(Reservation_Id):
     reserve = Reservation.query.get_or_404([Reservation_Id])
     return render_template('reserve.html', title=str(reserve.Reservation_Id), reserve=reserve, now=datetime.utcnow())
 
 
 @app.route("/reserve/<Reservation_Id>/delete", methods=['POST'])
-@login_required(role = 3)
+@login_required(role = 'ANY')
 def delete_reserve(Reservation_Id):
     reserve = Reservation.query.get_or_404([Reservation_Id])
     db.session.delete(reserve)
@@ -309,25 +309,27 @@ def delete_reserve(Reservation_Id):
     return redirect(url_for('home'))
 
 
-# @app.route("/reserve/<Reservation_Id>/<newDate>/update", methods=['POST'])
-# @login_required
-# def update_reserve(Reservation_Id, newDate):
-#     # reserve = Reservation.query.get_or_404([Reservation_Id])
-#     reserve = Reservation(Reservation_Id = Reservation_Id, Reservation_Date=datetime.today().strftime('%Y-%m-%d-%H:%M:%S'),Due_Date=newDate)
-#     db.session.update(reserve)
-#     db.session.commit()
-#     flash('The relation has been deleted!', 'success')
-#     return redirect(url_for('home'))
+#Structure is written by Yanji, modified by Ted. Also several html files modified by Yanji, include a new "update_reserve.html" file
+@app.route("/reserve/<Reservation_Id>/update", methods=['GET', 'POST'])
+@login_required(role = 'ANY')
+def update_reserve(Reservation_Id):
+    reserve = Reservation.query.get_or_404([Reservation_Id])
+    
+    form = ReserveUpdateForm()
+    if form.validate_on_submit():
+        reserve.Item_Id = form.Item_Id.data
+        reserve.User_ID = form.User_ID.data
+        reserve.Reservation_Date = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+        db.session.commit()
+        flash('The relation has been updated!', 'success')
+        return redirect(url_for('reserve', Reservation_Id=Reservation_Id))
+    elif request.method == 'GET':
+        form.Item_Id.data = reserve.Item_Id
+        form.User_ID.data = reserve.User_ID
+    return render_template('update_reserve.html', title = 'Update Reservation', form=form, legend='Update Reservation')
+#Yanji's codes end
 
 
-#@app.route("/assign/<User_ID>/<Item_Id>/delete", methods=['POST'])
-#@login_required
-#def delete_assign(User_ID,Item_Id):
-#    assign = Reservation.query.get_or_404([User_ID,Item_Id])
-#    db.session.delete(assign)
-#    db.session.commit()
-#    flash('The relation has been deleted!', 'success')
-#    return redirect(url_for('home'))
 
 #Emmanuels Add Item begins
 @app.route("/add", methods=['GET', 'POST'])

@@ -8,7 +8,7 @@
         <small class="text-muted">{{now.strftime('%A %B, %d %Y %H:%M:%S')}}</small>
         <input type="date" name="newDate" value={{ reserve.Due_Date }} />
           <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="url_for('update_reserve',Reservation_Id=reserve.Reservation_Id ) }}">Update</a>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_reserve', Reservation_Id=reserve.Reservation_Id) }}">Update</a>
             <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
           </div>
  

@@ -257,6 +257,15 @@ class Reserveform(reservevalidate):
      #   essn = Works_On.query.filter_by(essn=essn.data,pno=pno.data).first()
       #  if essn:
        #     raise ValidationError('That employee is already assigned to the Project. Please choose a different one.')
+
+#Reservation update Form - Made by Yanji
+class ReserveUpdateForm(FlaskForm):
+    Reservation_Id = HiddenField("")
+    User_ID = SelectField("Update User's Name", choices=myChoices6, coerce=int)
+    Item_Id = SelectField("Update Item's Title", choices=myChoices7, coerce=int)
+    Due_Date = DateField("Update Due Date")
+    submit = SubmitField('Update your reservation')
+#End of the code - Made by Yanji
        
 #Search form code -Ted
 class ItemSearchForm(Form):
