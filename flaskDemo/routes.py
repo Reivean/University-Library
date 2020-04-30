@@ -5,7 +5,6 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, request, abort
 from flaskDemo import app, db, bcrypt
 from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm, AddItemform, ReserveUpdateForm
-# from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm, Assignform,
 from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher, Author, Language, Post, Results, Location, Item_type
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from datetime import datetime
@@ -16,7 +15,7 @@ from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-engine = create_engine('mysql://Ted:1111@127.0.0.1:8889/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
+engine = create_engine('mysql://root:NummerEins#1@localhost/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind = engine))
@@ -26,10 +25,10 @@ login_manager = LoginManager()
 
 @app.route("/test", methods=['GET','POST'])
 def test():
-    searchdb = mysql.connector.connect(host="127.0.0.1:8889",        #Change to your URL
+    searchdb = mysql.connector.connect(host="localhost",        #Change to your URL
                                        database='university library',
-                                       user='xxxx',                   #Change to your User
-                                       password='xxxx')              #Change to your Password
+                                       user='root',                   #Change to your User
+                                       password='NummerEins#1')              #Change to your Password
     if searchdb.is_connected():
         cursor = searchdb.cursor()
         
@@ -124,14 +123,7 @@ def search_results(search):
     
 @app.route("/home")
 def home():
-    # results2 = Faculty.query.join(Qualified,Faculty.facultyID == Qualified.facultyID) \
-    #            .add_columns(Faculty.facultyID, Faculty.facultyName, Qualified.Datequalified, Qualified.courseID) \
-    #            .join(Course, Course.courseID == Qualified.courseID).add_columns(Course.courseName)
-    # results = Faculty.query.join(Qualified,Faculty.facultyID == Qualified.facultyID) \
-    #           .add_columns(Faculty.facultyID, Faculty.facultyName, Qualified.Datequalified, Qualified.courseID)
-    #results3 = Works_On.query.join(Employee,Works_On.essn == Employee.ssn)\
-     #       .add_columns(Employee.ssn, Project.pnumber, Employee.fname, Project.pname)\
-      #      .join(Project, Project.pnumber == Works_On.pno)
+
     
     # print("Hello world....shivang here....", flush=True)
 
@@ -145,9 +137,7 @@ def home():
     return render_template('assign_home.html', joined_m_n = results4)
     posts = Post.query.all()
     return render_template('search.html', posts=posts)
-#    results4 = Reservation.query.join(User1,Reservation.User_ID == User1.User_Id)\
-#               .add_columns(Reservation.Reservation_Id,User1.User_Id, Item.Item_Id, User1.UName, Item.Keyword)\
-#               .join(Item, Item.Item_Id == Reservation.Item_Id)
+#
     return render_template('join.html', title='Join',joined_m_n = results4)
 
    
@@ -328,19 +318,6 @@ def delete_item():
     return redirect(url_for('add'))
 
 #Emmanuel's Add and Delete Item Ends
-
-
-@app.route("/assign/new", methods=['GET', 'POST'])
-@login_required(role = 'ANY')
-def new_assign():
-    form = Assignform()
-    if form.validate_on_submit():
-        assign = assignvalidate(essn=form.essn.data, pno=form.pno.data)
-        db.session.add(assign)
-        db.session.commit()
-        flash('You have added a new relation!', 'success')
-        return redirect(url_for('home'))
-    return render_template('create_assign.html', title='New Employee-Project Assignment',form=form, legend='New Assignment')
 
 
 

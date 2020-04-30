@@ -6,13 +6,10 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flaskDemo import db
 from flaskDemo.models import Reservation, User1, Item, User1_type, Item_type, Publisher, Location, Language, Author
-#from flaskDemo.models import User, Department, getDepartment, getDepartmentFactory, Employee, Project, Works_On, Reservation, User, Item
 from wtforms.fields.html5 import DateField
 from flask_table import Table, Col, LinkCol
 
-# ssns = Department.query.with_entities(Department.mgr_ssn).distinct()
-# emp = Employee.query.with_entities(Employee.ssn, Employee.fname,Employee.lname)
-# proj = Project.query.with_entities(Project.pnumber, Project.pname)
+
 user1typeid = User1_type.query.with_entities(User1_type.User1_type_id, User1_type.Name)
 userid = User1.query.with_entities(User1.User_Id, User1.UName)
 itemid = Item.query.with_entities(Item.Item_Id, Item.Title)
@@ -22,20 +19,6 @@ languageid = Language.query.with_entities(Language.Language_Id, Language.Languag
 itemtypeid = Item_type.query.with_entities(Item_type.Item_type_id, Item_type.Type_name)
 authorid = Author.query.with_entities(Author.Author_Id, Author.FirstName, Author.LastName)
 
-
-#### query to get usertype id and name from table
-
-# results=list()
-# for row in ssns:
-#     rowDict=row._asdict()
-#     results.append(rowDict)
-# myChoices = [(row['mgr_ssn'],row['mgr_ssn']) for row in results]
-
-# results=list()
-# for row in emp:
-#     rowDict=row._asdict()
-#     results.append(rowDict)
-# myChoices3 = [(row['fname'] + row['lname'], row['ssn']) for row in results]
 
 results=list()
 for row in itemid:
@@ -51,11 +34,6 @@ for row in userid:
 myChoices6 = [(row['User_Id'], row['UName']) for row in results]
 
 
-# results=list()
-# for row in proj:
-#     rowDict=row._asdict()
-#     results.append(rowDict)
-# myChoices4 = [(row['pname'], row['pnumber']) for row in results]
 
 #### create strcture
 
@@ -176,59 +154,7 @@ class PostForm(FlaskForm):
     content = TextAreaField('Content', validators=[DataRequired()])
     submit = SubmitField('Post')
 
-    
-# class DeptUpdateForm(FlaskForm):
 
-# #    dnumber=IntegerField('Department Number', validators=[DataRequired()])
-#     dnumber = HiddenField("")
-
-#     dname=StringField('Employee Name:', validators=[DataRequired(),Length(max=15)])
-# #  Commented out using a text field, validated with a Regexp.  That also works, but a hassle to enter ssn.
-# #    mgr_ssn = StringField("Manager's SSN", validators=[DataRequired(),Regexp('^(?!000|666)[0-8][0-9]{2}(?!00)[0-9]{2}(?!0000)[0-9]{4}$', message="Please enter 9 digits for a social security.")])
-
- #One of many ways to use SelectField or QuerySelectField.  Lots of issues using those fields!!
-     #mgr_ssn = SelectField("Manager's SSN", choices=myChoices)  # myChoices defined at top
-    
-# # the regexp works, and even gives an error message
-# #    mgr_start=DateField("Manager's Start Date:  yyyy-mm-dd",validators=[Regexp(regex)])
-# #    mgr_start = DateField("Manager's Start Date")
-
-# #    mgr_start=DateField("Manager's Start Date", format='%Y-%m-%d')
-#     mgr_start = DateField("Manager's start date:", format='%Y-%m-%d')  # This is using the html5 date picker (imported)
-#     submit = SubmitField('Update this department')
-
-
-# # got rid of def validate_dnumber
-
-#     def validate_dname(self, dname):    # apparently in the company DB, dname is specified as unique
-#          dept = Department.query.filter_by(dname=dname.data).first()
-#          if dept and (str(dept.dnumber) != str(self.dnumber.data)):
-             # raise ValidationError('That department name is already being used. Please choose a different name.')
-
-
-# class DeptForm(DeptUpdateForm):
-
-#     dnumber=IntegerField('Department Number', validators=[DataRequired()])
-#     submit = SubmitField('Add this department')
-
-#     def validate_dnumber(self, dnumber):    #because dnumber is primary key and should be unique
-#         dept = Department.query.filter_by(dnumber=dnumber.data).first()
-#         if dept:
-#             raise ValidationError('That department number is taken. Please choose a different one.')
-
-
-#class assignvalidate(FlaskForm):
-
-#    dnumber=IntegerField('Department Number', validators=[DataRequired()])
-  #  dnumber = HiddenField("")
-
-   # dname=StringField('Employee Name:', validators=[DataRequired(),Length(max=15)])
-#  Commented out using a text field, validated with a Regexp.  That also works, but a hassle to enter ssn.
-#    mgr_ssn = StringField("Manager's SSN", validators=[DataRequired(),Regexp('^(?!000|666)[0-8][0-9]{2}(?!00)[0-9]{2}(?!0000)[0-9]{4}$', message="Please enter 9 digits for a social security.")])
-
-#  One of many ways to use SelectField or QuerySelectField.  Lots of issues using those fields!!
- #   essn = SelectField("Employee's SSN", choices=myChoices3)  # myChoices defined at top
-  #  pno = SelectField("Project No", choices=myChoices4) 
 
 class reservevalidate(FlaskForm):
 
@@ -236,13 +162,6 @@ class reservevalidate(FlaskForm):
     Item_Id = SelectField("Item's Title", choices=myChoices7 , coerce=int)
     
 
-# the regexp works, and even gives an error message
-#    mgr_start=DateField("Manager's Start Date:  yyyy-mm-dd",validators=[Regexp(regex)])
-#    mgr_start = DateField("Manager's Start Date")
-
-#    mgr_start=DateField("Manager's Start Date", format='%Y-%m-%d')
- #   mgr_start = DateField("Manager's start date:", format='%Y-%m-%d')  # This is using the html5 date picker (imported)
-   # submit = SubmitField('Update this Relation')
 
 class Reserveform(reservevalidate):
 
@@ -256,14 +175,7 @@ class Reserveform(reservevalidate):
         if User_ID:
             raise ValidationError('This relation is already reserved. Please choose a different one.')
 
-   # essn=SelectField('Employee', validators=[DataRequired()])
-   # pno=SelectField('Project', validators=[DataRequired()])
-   # submit = SubmitField('Add this relationship')
 
-    #def validate_essn_pno(self, essn, pno):    #because dnumber is primary key and should be unique
-     #   essn = Works_On.query.filter_by(essn=essn.data,pno=pno.data).first()
-      #  if essn:
-       #     raise ValidationError('That employee is already assigned to the Project. Please choose a different one.')
 
 #Reservation update Form - Made by Yanji
 class ReserveUpdateForm(FlaskForm):
