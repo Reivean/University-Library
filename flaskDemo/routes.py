@@ -1,5 +1,6 @@
 import os
 import secrets
+import mysql.connector
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, request, abort
 from flaskDemo import app, db, bcrypt
@@ -22,6 +23,24 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 
 #This part is a redefiner for the login_reqired decorater, to make it simple just testing with 3-library_stuff for accessing add and delete  -Ted
 login_manager = LoginManager()
+
+@app.route("/test", methods=['GET','POST'])
+def test():
+    searchdb = mysql.connector.connect(host="127.0.0.1:8889",        #Change to your URL
+                                       database='university library',
+                                       user='xxxx',                   #Change to your User
+                                       password='xxxx')              #Change to your Password
+    if searchdb.is_connected():
+        cursor = searchdb.cursor()
+        
+        sql = "SELECT \
+            item.Title AS Title, \
+            author.Author_Id AS Author \
+            FROM item \
+            INNER JOIN author ON item.Author_Id = author.Author_Id"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+    return render_template('result.html', results=results)
 
 def login_required(role='ANY'):
     def wrapper(fn):
@@ -48,6 +67,7 @@ def search():
     if request.method == 'POST':
         return search_results(search)
     return render_template('search.html', form=search)
+        
 
 @app.route("/results")
 @login_required(role = 'ANY')
@@ -211,66 +231,7 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.UName)
     return render_template('account.html', title='Account',
                            image_file=image_file, form=form)
-
-
-#@app.route("/dept/new", methods=['GET', 'POST'])
-#@login_required(role = 'ANY')
-#def new_dept():
-#    form = DeptForm()
-#    if form.validate_on_submit():
-#        dept = Department(dname=form.dname.data, dnumber=form.dnumber.data,mgr_ssn=form.mgr_ssn.data,mgr_start=form.mgr_start.data)
-#        db.session.add(dept)
-#        db.session.commit()
-#        flash('You have added a new department!', 'success')
-#        return redirect(url_for('home'))
-#    return render_template('create_dept.html', title='New Department',
-#                           form=form, legend='New Department')
-
-
-#@app.route("/dept/<dnumber>")
-#@login_required
-#def dept(dnumber):
-#   dept = Department.query.get_or_404(dnumber)
-#  return render_template('dept.html', title=dept.dname, dept=dept, now=datetime.utcnow())
-
-
-#@app.route("/dept/<dnumber>/update", methods=['GET', 'POST'])
-#@login_required(role = 'ANY')
-#def update_dept(dnumber):
-#    dept = Department.query.get_or_404(dnumber)
-#    currentDept = dept.dname
-#
-#    form = DeptUpdateForm()
-#    if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
-#        if currentDept !=form.dname.data:
-#            dept.dname=form.dname.data
-#        dept.mgr_ssn=form.mgr_ssn.data
-#        dept.mgr_start=form.mgr_start.data
-#        db.session.commit()
-#        flash('Your department has been updated!', 'success')
-#        return redirect(url_for('dept', dnumber=dnumber))
-#    elif request.method == 'GET':              # notice we are not passing the dnumber to the form
-#
-#        form.dnumber.data = dept.dnumber
-#        form.dname.data = dept.dname
-#        form.mgr_ssn.data = dept.mgr_ssn
-#        form.mgr_start.data = dept.mgr_start
-#    return render_template('create_dept.html', title='Update Department',
-#                           form=form, legend='Update Department')
-
-
-
-
-#@app.route("/dept/<dnumber>/delete", methods=['POST'])
-#@login_required(role = 'ANY')
-#def delete_dept(dnumber):
-#    dept = Department.query.get_or_404(dnumber)
-#    db.session.delete(dept)
-#    db.session.commit()
-#    flash('The department has been deleted!', 'success')
-#    return redirect(url_for('home'))
-
-
+    
 
 @app.route("/publish/<Publisher_Id>/<Name>")
 @login_required(role = 'ANY')
