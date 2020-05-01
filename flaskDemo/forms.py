@@ -175,8 +175,6 @@ class Reserveform(reservevalidate):
         if User_ID:
             raise ValidationError('This relation is already reserved. Please choose a different one.')
 
-
-
 #Reservation update Form - Made by Yanji
 class ReserveUpdateForm(FlaskForm):
     Reservation_Id = HiddenField("")

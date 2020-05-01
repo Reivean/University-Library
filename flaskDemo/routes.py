@@ -2,7 +2,7 @@ import os
 import secrets
 import mysql.connector
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request, request, abort
+from flask import render_template, url_for, flash, redirect, request, request, abort, session
 from flaskDemo import app, db, bcrypt
 from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, Reserveform, ItemSearchForm, AddItemform, ReserveUpdateForm
 from flaskDemo.models import Reservation, User1, Item, User1_type, Publisher, Author, Language, Post, Results, Location, Item_type
@@ -12,7 +12,7 @@ from datetime import datetime
 from functools import wraps
 
 #Below 2 imports are for creating db_session, which is used for access to the whole database -Ted
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 engine = create_engine('mysql://root:NummerEins#1@localhost/university library', convert_unicode=True) #IMPORTANT!!!! CHANGE THE URL WITH YOUR DB!!! -Ted
@@ -317,7 +317,28 @@ def delete_item():
     flash('The Item has been deleted!', 'success')
     return redirect(url_for('add'))
 
-#Emmanuel's Add and Delete Item Ends
+# Emmanuel's Add and Delete Item Ends
 
 
+# Subquery -- prints in terminal -- Emmanuel
+with engine.connect() as con:
+
+    rs = con.execute('SELECT * FROM item WHERE keyword = "fiction"')
+
+    for row in rs:
+        print(row)
+# Aggregation --prints in terminal --Emmanuel
+with engine.connect() as con:
+
+    rs = con.execute('SELECT * FROM author GROUP BY author_id')
+
+    for row in rs:
+        print(row)
+# Compound condition -- prints in terminal --Emmanuel
+with engine.connect() as con:
+
+    rs = con.execute("SELECT * FROM author WHERE author_id BETWEEN 300 and 301")
+
+    for row in rs:
+        print(row)
 
